@@ -56,17 +56,17 @@ class RagOrchestrator:
         
         return response 
     
-    def answer_question(self, question, top_k=3):
+    def answer_question(self, question, top_k=3, active_moderation=True):
         # Vérification question => modération
-        moderation_result = self.moderator.moderate(question)
-        if moderation_result.get("is_prompt_injection"):
-            return {"error": "Tentative de prompt injection détectée."}
+        if active_moderation:
+            moderation_result = self.moderator.moderate(question)
+            if moderation_result.get("is_prompt_injection"):
+                return {"error": "Tentative de prompt injection détectée."}
         
         # Si pas d'injection, on continue le pipeline
         vector_db_results = self.vector_base.retrieve(question, top_k) # top_k pour récupérer les chunks les plus proches (variable)
         list_chunks = list(vector_db_results['documents'][0])
-        print(f"Type de list_chunks : {type(list_chunks)}")
-        print(f"Chunks récupérés depuis la base vectorielle : {list_chunks}")
+
         results_llm_rag = self.get_response_from_llm(list_chunks=list_chunks, user_prompt=question)
         
         return results_llm_rag
