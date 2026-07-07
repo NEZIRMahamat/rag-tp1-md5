@@ -5,6 +5,11 @@ __pycache__/
 
 # C extensions
 *.so
+# Local dir & Files
+data/
+vector_db/
+
+
 
 # Distribution / packaging
 .Python
